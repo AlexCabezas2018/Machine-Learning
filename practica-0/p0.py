@@ -86,7 +86,7 @@ def compara_tiempos():
     plt.scatter(num_points, times_vectors, c="blue", label="vectores")
 
     plt.legend()
-    plt.savefig("time.png")
+    plt.savefig("practica-0/time.png")
 
 
 compara_tiempos()
