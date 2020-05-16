@@ -87,22 +87,3 @@ def compara_tiempos():
 
 
 compara_tiempos()
-
-"""
-
-def square(x):
-    return x ** 2
-
-print(
-    "Usando bucles: {}".format(
-        integra_mc_bucle(square, 10, 20, num_puntos=100000)["value"]
-    )
-)
-print(
-    "Usando numpy: {}".format(
-        integra_mc_vectores(square, 10, 20, num_puntos=100000)["value"]
-    )
-)
-print("Dato real: {}".format(integrate.quad(square, 10, 20)[0]))
-
-"""
