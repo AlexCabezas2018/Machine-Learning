@@ -1,6 +1,6 @@
 import numpy as np
 from sklearn.metrics import accuracy_score
-from scipy import optimize
+import scipy.optimize as opt
 
 
 class LogisticRegresion:
@@ -9,38 +9,41 @@ class LogisticRegresion:
 
     def train(self, x, y, reg=0):
         initial_thetas = np.zeros(x.shape[1])
-        self.model = optimize.minimize(fun=linearCostGrad,
-            x0=initial_thetas,
-            args=(x, y, reg),
-            method='TNC',
-            jac=True)
-    
+        self.model = opt.fmin_tnc(
+            func = log_regresion_regularized_cost,
+            x0 = initial_thetas, 
+            fprime = log_regresion_regularized_gradient, 
+            args = (x, y, reg)
+        )[0]
+
     def get_precision(self, x, y):
-        predictions = np.round(self.model.x @ np.transpose(x))
+        predictions = np.round(sigmoid(np.matmul(x, np.transpose(self.model))))
         return accuracy_score(y, predictions)
 
 
 # Funciones auxiliares
-def get_acurracy(Y, Y_pred):
-    return np.sum((Y == np.array(Y_pred))) / m
 
 def sigmoid(X):
     return 1 / (1 + np.exp(-X))
 
-def cost(thetas, X, Y, reg=0):
-    m = X.shape[0]
-    H = np.dot(X, thetas)
-    cost = (1/(2*m)) * np.sum((H-Y.T)**2) + ( reg / (2 * m) ) * np.sum(thetas[1:]**2)
-    return cost
+def log_regresion_regularized_cost(thetas, X, Y, Lambda):
+    m = np.shape(X)[0]
+    sigmoid_X_theta = sigmoid(np.matmul(X, thetas))
+    
+    term_1_1 = np.matmul(np.transpose(np.log(sigmoid_X_theta)), Y)
+    term_1_2 = np.matmul(np.transpose(np.log((1 - sigmoid_X_theta))),(1-Y))
+    
+    term_1 = - (term_1_1 + term_1_2) / np.shape(X)[0]
+    term_2 = Lambda/(2*m) * sum(thetas **2)
+    
+    return term_1 + term_2
 
-def gradient(thetas, X, Y, reg=0):
-    tt = np.copy(thetas)
-    tt[0]=0
-    m = X.shape[0]
-    H = np.dot(X, thetas)
-    gradient = ((1 / m) * np.dot(H-Y.T,X)) + ((reg/m) * tt)
-    return gradient
+def log_regresion_regularized_gradient(thetas, X, Y, Lambda):
+    m = np.shape(X)[0]
+    sigmoid_X_theta = sigmoid(np.matmul(X,thetas))
+    
+    term_1 = np.matmul(np.transpose(X),(sigmoid_X_theta - Y)) /  np.shape(X)[0]
+    term_2 = (Lambda/m) * thetas
 
-def linearCostGrad(thetas,X,Y,reg=0):
-    return (cost(thetas,X,Y,reg),gradient(thetas,X,Y).flatten())
+    return term_1 + term_2
 
