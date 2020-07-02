@@ -16,6 +16,29 @@ class LogisticRegresion:
             args = (x, y, reg)
         )[0]
 
+    def optimize(self, x, y, x_val, y_val):
+        regs = [0.01, 0.02, 0.03, 0.1, 0.2, 0.3, 1]
+        best_acc = 0
+        best_model = None
+
+        for reg in regs:
+            initial_thetas = np.zeros(x.shape[1])
+            model = opt.fmin_tnc(
+                func = log_regresion_regularized_cost,
+                x0 = initial_thetas, 
+                fprime = log_regresion_regularized_gradient, 
+                args = (x, y, reg)
+            )[0]
+
+            predictions =  np.round(sigmoid(np.matmul(x_val, np.transpose(model))))
+            acc = accuracy_score(y_val, predictions)
+            if acc > best_acc:
+                best_acc = acc
+                best_model = model
+
+        self.model = best_model
+            
+
     def get_precision(self, x, y):
         predictions = np.round(sigmoid(np.matmul(x, np.transpose(self.model))))
         return accuracy_score(y, predictions)

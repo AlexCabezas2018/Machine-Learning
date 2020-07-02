@@ -6,7 +6,11 @@ class SupportVectorMachine:
         self.model = None
         self.accuracy = 0
 
-    def train(self, x, y, x_val, y_val):
+    def train(self, x, y):
+        self.model = SVC(kernel='rbf', gamma='scale')
+        self.model.fit(x, y.ravel())
+
+    def optimize(self, x, y, x_val, y_val):
         self.model = self.select_best_model(x, y, x_val, y_val)
 
     # Esta funcion selecciona los mejores parámetros de C y σ
@@ -15,13 +19,12 @@ class SupportVectorMachine:
         best_svm = None
         best_accuracy = 0
         for C in params:
-            for sigma in params:
-                svm = SVC(kernel='rbf', C=C, gamma=1/(2 * sigma**2))
-                svm.fit(x, y.ravel())
-                acc = accuracy_score(y_val, svm.predict(x_val))
-                if (best_accuracy < acc):
-                    best_svm = svm
-                    best_accuracy = acc
+            svm = SVC(kernel='rbf', C=C, gamma='scale')
+            svm.fit(x, y.ravel())
+            acc = accuracy_score(y_val, svm.predict(x_val))
+            if (best_accuracy < acc):
+                best_svm = svm
+                best_accuracy = acc
 
         return best_svm
 
