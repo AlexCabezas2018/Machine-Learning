@@ -2,7 +2,9 @@ import numpy as np
 import scipy.optimize as opt
 from sklearn.metrics import accuracy_score
 
-class NeuronalNetWork:
+MAX_ITERATIONS = 80
+
+class NeuralNetWork:
 
     def __init__(self):
         self.model = None
@@ -18,32 +20,31 @@ class NeuronalNetWork:
                 args = (8, 32, 1, x, y, 1), 
                 method = 'TNC', 
                 jac = True, 
-                options = {'maxiter': 70}
+                options = {'maxiter': MAX_ITERATIONS}
             )
 
 
-    def optimize(self, x, y, x_val, y_val):
+    def fit(self, x, y, x_val, y_val):
         self.model = self.select_best_model_based_on_lambda(x, y, x_val, y_val)
 
 
     def select_best_model_based_on_lambda(self, x, y, x_val, y_val):
         lambdas = np.linspace(0, 1, 10)
-
         random_theta1 = random_weights(9, 32)
         random_theta2 = random_weights(33, 1)
-
         params_rn =  np.concatenate((np.ravel(random_theta1), np.ravel(random_theta2)))
 
         best_model = None
         best_acc = 0
         for lbda in lambdas:
+
             fmin = opt.minimize(
                 fun = backprop,
                 x0 = params_rn, 
                 args = (8, 32, 1, x, y, lbda), 
                 method = 'TNC', 
                 jac = True, 
-                options = {'maxiter': 70}
+                options = {'maxiter': MAX_ITERATIONS}
             )
 
             theta1_opt = np.reshape(fmin.x[:32 * (8 + 1)], (32, (8 + 1)))
@@ -74,6 +75,7 @@ def sigmoid_prime(z):
     return sigmoid(z) * (1 - sigmoid(z))
 
 def random_weights(L_in, L_out, epsilon = 0.0001):
+    np.random.seed(0)
     return np.random.random((L_in, L_out)) * (2 * epsilon) - epsilon
 
 # Forward propagation

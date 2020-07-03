@@ -16,8 +16,8 @@ class LogisticRegresion:
             args = (x, y, reg)
         )[0]
 
-    def optimize(self, x, y, x_val, y_val):
-        regs = [0.01, 0.02, 0.03, 0.1, 0.2, 0.3, 1]
+    def fit(self, x, y, x_val, y_val):
+        regs = [0, 0.01, 0.03, 0.1, 0.3, 1, 3, 10, 30]
         best_acc = 0
         best_model = None
 

@@ -10,7 +10,7 @@ class SupportVectorMachine:
         self.model = SVC(kernel='rbf', gamma='scale')
         self.model.fit(x, y.ravel())
 
-    def optimize(self, x, y, x_val, y_val):
+    def fit(self, x, y, x_val, y_val):
         self.model = self.select_best_model(x, y, x_val, y_val)
 
     # Esta funcion selecciona los mejores parámetros de C y σ
