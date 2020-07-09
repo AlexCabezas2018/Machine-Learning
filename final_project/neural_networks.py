@@ -64,7 +64,23 @@ class NeuralNetWork:
         theta2_opt = np.reshape(self.model.x[32 * (8 + 1):], (1, (32 + 1)))
 
         predictions = forward_propagate(x, theta1_opt, theta2_opt)
-        return accuracy_score(y, np.round(predictions[4]))
+        return accuracy_score(y, np.round(predictions[4]).ravel())
+
+    
+    def get_fscore(self, x, y):
+        theta1_opt = np.reshape(self.model.x[:32 * (8 + 1)], (32, (8 + 1)))
+        theta2_opt = np.reshape(self.model.x[32 * (8 + 1):], (1, (32 + 1)))
+
+        prediction = np.round(forward_propagate(x, theta1_opt, theta2_opt)[4]).ravel()
+
+        number_of_true_positive = sum(y + prediction == 2)
+        number_of_predicted_positive = sum(prediction)
+        actual_positives = sum(y)
+
+        precision = number_of_true_positive / number_of_predicted_positive
+        recall = number_of_true_positive / actual_positives
+
+        return 2 * (precision * recall) / (precision + recall)
 
 # Funciones auxiliares
 

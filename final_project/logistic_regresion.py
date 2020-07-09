@@ -43,6 +43,19 @@ class LogisticRegresion:
         predictions = np.round(sigmoid(np.matmul(x, np.transpose(self.model))))
         return accuracy_score(y, predictions)
 
+    def get_fscore(self, x, y):
+        prediction = np.round(sigmoid(np.matmul(x, np.transpose(self.model))))
+
+        number_of_true_positive = sum(y + prediction == 2)
+        number_of_predicted_positive = sum(prediction)
+        actual_positives = sum(y)
+
+        precision = number_of_true_positive / number_of_predicted_positive
+        recall = number_of_true_positive / actual_positives
+
+        return 2 * (precision * recall) / (precision + recall)
+
+
 
 # Funciones auxiliares
 

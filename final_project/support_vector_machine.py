@@ -30,3 +30,18 @@ class SupportVectorMachine:
 
     def get_precision(self, x, y):
         return accuracy_score(y, self.model.predict(x))
+
+    def get_fscore(self, x, y):
+        prediction = self.model.predict(x)
+
+        number_of_true_positive = sum(y + prediction == 2)
+        number_of_predicted_positive = sum(prediction)
+        actual_positives = sum(y)
+
+        precision = number_of_true_positive / number_of_predicted_positive
+        recall = number_of_true_positive / actual_positives
+
+        return 2 * (precision * recall) / (precision + recall)
+
+
+
